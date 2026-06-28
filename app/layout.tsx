@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Sora, Anton } from "next/font/google";
+import { Geist, Geist_Mono, Bricolage_Grotesque } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -8,15 +8,14 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const sora = Sora({
-  variable: "--font-sora",
-  weight: ["600", "800"],
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-const anton = Anton({
-  variable: "--font-anton",
-  weight: "400",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
+  weight: ["600", "700", "800"],
   subsets: ["latin"],
 });
 
@@ -51,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${sora.variable} ${anton.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         {children}

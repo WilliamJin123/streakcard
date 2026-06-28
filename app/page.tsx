@@ -12,7 +12,7 @@ import { defaultTemplate } from "@/lib/templates";
 import type { TemplateId } from "@/lib/templates";
 
 const PRIMARY_GRADIENT =
-  "linear-gradient(150deg, #FF8A00 0%, #FF1E56 55%, #B5179E 100%)";
+  "linear-gradient(135deg, #FF8A2B 0%, #FF3B1F 55%, #E11D2A 100%)";
 
 const checkerboard = {
   backgroundColor: "#dcdcdc",
@@ -59,7 +59,7 @@ export default function Home() {
     <main className="mx-auto flex min-h-full w-full max-w-xl flex-col gap-7 px-5 py-10 sm:py-14">
       <header>
         <div className="flex items-center gap-2 text-neutral-900">
-          <Flame size={22} color="#FF1E56" />
+          <Flame size={22} tone="fire" idSuffix="header" />
           <span className="text-base font-bold tracking-tight">StreakCard</span>
         </div>
         <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-neutral-900 sm:text-5xl">
@@ -73,18 +73,26 @@ export default function Home() {
 
       {/* Live preview */}
       <div
-        style={transparent ? checkerboard : undefined}
-        className={`flex justify-center rounded-3xl p-6 sm:p-8 ${
-          transparent ? "" : "border border-black/5 bg-white shadow-sm"
-        }`}
+        data-testid="preview-stage"
+        style={transparent ? checkerboard : { background: "#ECEBE7" }}
+        className="flex justify-center rounded-3xl border border-black/5 p-7 sm:p-9"
       >
-        <StreakCard
-          ref={cardRef}
-          habit={habit}
-          day={day}
-          template={template}
-          transparent={transparent}
-        />
+        <div
+          style={{
+            borderRadius: 32,
+            boxShadow: transparent
+              ? "none"
+              : "0 24px 60px -16px rgba(20,15,10,0.32)",
+          }}
+        >
+          <StreakCard
+            ref={cardRef}
+            habit={habit}
+            day={day}
+            template={template}
+            transparent={transparent}
+          />
+        </div>
       </div>
 
       <Controls
@@ -130,8 +138,11 @@ export default function Home() {
           type="button"
           onClick={handleExport}
           disabled={exporting}
-          style={{ background: PRIMARY_GRADIENT }}
-          className="w-full rounded-xl py-4 text-base font-bold text-white shadow-md transition hover:opacity-95 active:scale-[0.99] disabled:opacity-70"
+          style={{
+            background: PRIMARY_GRADIENT,
+            boxShadow: "0 10px 30px -8px rgba(225,45,20,0.5)",
+          }}
+          className="w-full rounded-xl py-4 text-base font-bold text-white transition hover:opacity-95 active:scale-[0.99] disabled:opacity-70"
         >
           {exporting ? "Rendering…" : "Download PNG"}
         </button>
