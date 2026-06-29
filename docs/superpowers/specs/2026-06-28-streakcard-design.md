@@ -62,3 +62,35 @@ Auth, accounts, DB for app data, dashboards, settings, multi-page nav, dark-mode
 - [ ] Email-capture ask live (Formspree) with success/error states.
 - [ ] Vercel Analytics wired with `email_signup` event.
 - [ ] Output card looks good enough to post.
+
+---
+
+## Offer v2 — paid validation (2026-06-28, later)
+
+**Why:** The free→email lead magnet works, but the question became "is this worth paying
+for?" Audience chosen: **fitness/health**. Goal: **prove a stranger will pay** before
+building anything bigger (stays honest to the spec's anti-build directive). So this is a
+small, surgical change — not a rebuild.
+
+**The offer (freemium):**
+- **Free:** standard 1080px PNG, `streakcard.app` watermark, all 3 templates. Watermark = free distribution.
+- **Pro — $7 one-time (founding):** transparent export (the Reel-overlay differentiator),
+  no watermark, 2× HD (2160px), + a fitness template pack (promised). The transparent
+  toggle previews for free but **downloading transparent opens the Pro dialog**.
+
+**Mechanics (zero backend, true to spec — "Stripe Payment Link only"):**
+- "Unlock Pro" → **Stripe Payment Link** (`NEXT_PUBLIC_STRIPE_PAYMENT_LINK`).
+- Stripe success redirect → `/?pro=1` → `usePro()` persists a `localStorage` flag
+  (via `useSyncExternalStore`) and strips the param. Pro unlocks instantly.
+- **Intentionally bypassable** — at validation stage we measure willingness-to-pay
+  (Stripe records the sale regardless), not DRM. Real entitlement checking would be the trap.
+
+**The ask:** payment is now the single ask; the email form was removed.
+
+**Funnel analytics:** `pro_view` (dialog opened), `pro_checkout_click` (Stripe CTA),
+`card_download` (with `pro`/`transparent` props).
+
+**Pending (user supplies):** a Stripe Payment Link with post-payment redirect set to
+`https://streakcard.vercel.app/?pro=1`; then set `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` in
+Vercel and redeploy. Until then the CTA shows "Checkout opens soon." Domain stays on
+`*.vercel.app` for now (`streakcard.app` is available to grab later).

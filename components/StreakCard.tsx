@@ -10,6 +10,8 @@ export interface StreakCardProps {
   day: number;
   template: TemplateId;
   transparent: boolean;
+  /** Pro hides the watermark. */
+  pro?: boolean;
 }
 
 const FONT_SANS = "var(--font-geist-sans), system-ui, sans-serif";
@@ -59,10 +61,11 @@ function Watermark({ color }: { color: string }) {
 interface CardProps {
   habit: string;
   dayStr: string;
+  showWatermark: boolean;
 }
 
 /** Ember — the number forged from heat. Charcoal + warm bloom + grain. */
-function EmberCard({ habit, dayStr }: CardProps) {
+function EmberCard({ habit, dayStr, showWatermark }: CardProps) {
   return (
     <>
       <div
@@ -143,13 +146,13 @@ function EmberCard({ habit, dayStr }: CardProps) {
         </div>
       </div>
 
-      <Watermark color="rgba(255,232,221,0.42)" />
+      {showWatermark && <Watermark color="rgba(255,232,221,0.42)" />}
     </>
   );
 }
 
 /** Chain — "don't break the chain." Light, framed, ember tick-row signature. */
-function ChainCard({ habit, dayStr }: CardProps) {
+function ChainCard({ habit, dayStr, showWatermark }: CardProps) {
   const ink = "#16140F";
   const accent = "#FF5A1F";
   const muted = "#8C887F";
@@ -245,25 +248,27 @@ function ChainCard({ habit, dayStr }: CardProps) {
       >
         day streak
       </span>
-      <span
-        style={{
-          position: "absolute",
-          bottom: 31,
-          right: 32,
-          fontFamily: FONT_MONO,
-          fontSize: 11,
-          letterSpacing: "0.14em",
-          color: muted,
-        }}
-      >
-        streakcard.app
-      </span>
+      {showWatermark && (
+        <span
+          style={{
+            position: "absolute",
+            bottom: 31,
+            right: 32,
+            fontFamily: FONT_MONO,
+            fontSize: 11,
+            letterSpacing: "0.14em",
+            color: muted,
+          }}
+        >
+          streakcard.app
+        </span>
+      )}
     </>
   );
 }
 
 /** Aurora — heat as light. Deliberate sunset mesh + glow halo behind the number. */
-function AuroraCard({ habit, dayStr }: CardProps) {
+function AuroraCard({ habit, dayStr, showWatermark }: CardProps) {
   return (
     <>
       <div
@@ -346,13 +351,18 @@ function AuroraCard({ habit, dayStr }: CardProps) {
         </span>
       </div>
 
-      <Watermark color="rgba(255,255,255,0.62)" />
+      {showWatermark && <Watermark color="rgba(255,255,255,0.62)" />}
     </>
   );
 }
 
 /** Transparent overlay badge — glowing flame + number, no background, for Reels. */
-function TransparentBadge({ habit, dayStr, template }: CardProps & { template: TemplateId }) {
+function TransparentBadge({
+  habit,
+  dayStr,
+  template,
+  showWatermark,
+}: CardProps & { template: TemplateId }) {
   const numberFont = template === "chain" ? FONT_SANS : FONT_DISPLAY;
   const shadow = "0 2px 10px rgba(0,0,0,0.5)";
   return (
@@ -405,30 +415,33 @@ function TransparentBadge({ habit, dayStr, template }: CardProps & { template: T
       >
         {habit}
       </span>
-      <span
-        style={{
-          position: "absolute",
-          bottom: 16,
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          fontFamily: FONT_MONO,
-          fontSize: 11,
-          letterSpacing: "0.18em",
-          color: "rgba(255,255,255,0.82)",
-          textShadow: shadow,
-        }}
-      >
-        streakcard.app
-      </span>
+      {showWatermark && (
+        <span
+          style={{
+            position: "absolute",
+            bottom: 16,
+            left: 0,
+            right: 0,
+            textAlign: "center",
+            fontFamily: FONT_MONO,
+            fontSize: 11,
+            letterSpacing: "0.18em",
+            color: "rgba(255,255,255,0.82)",
+            textShadow: shadow,
+          }}
+        >
+          streakcard.app
+        </span>
+      )}
     </div>
   );
 }
 
 export const StreakCard = forwardRef<HTMLDivElement, StreakCardProps>(
-  function StreakCard({ habit, day, template, transparent }, ref) {
+  function StreakCard({ habit, day, template, transparent, pro = false }, ref) {
     const cleanHabit = habit.trim() || "Your Habit";
     const dayStr = formatDay(day);
+    const showWatermark = !pro;
 
     return (
       <div
@@ -446,13 +459,18 @@ export const StreakCard = forwardRef<HTMLDivElement, StreakCardProps>(
         }}
       >
         {transparent ? (
-          <TransparentBadge habit={cleanHabit} dayStr={dayStr} template={template} />
+          <TransparentBadge
+            habit={cleanHabit}
+            dayStr={dayStr}
+            template={template}
+            showWatermark={showWatermark}
+          />
         ) : template === "ember" ? (
-          <EmberCard habit={cleanHabit} dayStr={dayStr} />
+          <EmberCard habit={cleanHabit} dayStr={dayStr} showWatermark={showWatermark} />
         ) : template === "chain" ? (
-          <ChainCard habit={cleanHabit} dayStr={dayStr} />
+          <ChainCard habit={cleanHabit} dayStr={dayStr} showWatermark={showWatermark} />
         ) : (
-          <AuroraCard habit={cleanHabit} dayStr={dayStr} />
+          <AuroraCard habit={cleanHabit} dayStr={dayStr} showWatermark={showWatermark} />
         )}
       </div>
     );

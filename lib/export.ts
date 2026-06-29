@@ -17,26 +17,29 @@ function slugify(text: string): string {
 export interface ExportOptions {
   /** When true, the PNG keeps real alpha transparency (card background omitted). */
   transparent: boolean;
+  /** Pro: export at 2× resolution (2160px) instead of the standard 1080px. */
+  hd: boolean;
   habit: string;
   day: number;
 }
 
 /**
  * Render the given card node to a PNG and trigger a browser download.
- * Upscales to 1080×1080. When `transparent` is true the node's own background
- * is already removed via CSS, so we let the canvas stay transparent.
+ * Upscales to 1080×1080 (or 2160×2160 for HD). When `transparent` is true the
+ * node's own background is already removed via CSS, so the canvas stays transparent.
  */
 export async function exportCardPng(
   node: HTMLElement,
-  { transparent, habit, day }: ExportOptions,
+  { transparent, hd, habit, day }: ExportOptions,
 ): Promise<void> {
   // Web fonts must be loaded or the rasterized text falls back to a system font.
   if (typeof document !== "undefined" && document.fonts?.ready) {
     await document.fonts.ready;
   }
 
+  const targetPx = hd ? TARGET_PX * 2 : TARGET_PX;
   const options = {
-    pixelRatio: TARGET_PX / CARD_BASE_PX,
+    pixelRatio: targetPx / CARD_BASE_PX,
     cacheBust: true,
     // Omit backgroundColor so transparency is preserved; the node's CSS supplies
     // any background in non-transparent mode.
@@ -48,7 +51,7 @@ export async function exportCardPng(
   await toPng(node, options);
   const dataUrl = await toPng(node, options);
 
-  const suffix = transparent ? "-transparent" : "";
+  const suffix = `${transparent ? "-transparent" : ""}${hd ? "-hd" : ""}`;
   const link = document.createElement("a");
   link.download = `streakcard-${slugify(habit)}-day-${day}${suffix}.png`;
   link.href = dataUrl;
